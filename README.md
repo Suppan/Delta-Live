@@ -25,7 +25,7 @@ Possible Treatments:
 - set volume to 0.0 dB by select and key-command '0'
 
 ## Download
-[DeltaMix](https://github.com/Suppan/Delta-Live/releases/)
+[Delta-Live](https://github.com/Suppan/Delta-Live/releases/)
 
 ## Additional Software  
 
