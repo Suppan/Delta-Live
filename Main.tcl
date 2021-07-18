@@ -244,12 +244,14 @@ proc update_m_data {data} {
 proc save_m_data_dialog {} {
   global sf_data_List
   global out_name
+  if {$sf_data_List != ""} {
   set name "$out_name-1"
    set file [tk_getSaveFile -title "Save Data" -parent . -defaultextension ".m_data" -initialfile $name]
    if { $file == "" } {
         return; # they clicked cancel
       } else { set m_data [make_m_data]
               write_file $m_data $file }
+  } else { tk_messageBox -message "Select a soundfile directory first!" -icon warning -type ok }
  }
 
 proc import_m_data_dialog {} {
@@ -287,11 +289,25 @@ cmd-Q -> Quit
 
 
 --------------------------
-1. Possible Treatments:
+2. Possible Treatments:
 --------------------------
 
 change/edit volume manually by select and key-command '+'/'-'
 set volume to 0.0 dB by select and key-command '0'
+
+--------------------------
+3. Parameter:
+--------------------------
+
+single_play? -> in concert situations and deselect when rehearsing (allow multiple starts) 
+
+device -> Audio Interface (print ServerOptions.devices; in SuperCollider)
+
+memsize_power -> The number of kilobytes of real time memory allocated to the server. 
+Setting this too low is a common cause of 'exception in real time: alloc failed' errors. 
+The default is 2**13 (8192).
+
+out_name -> name of the Patch (*.scd)
 
 "
 
@@ -304,11 +320,11 @@ proc mk_Help_Win {} {
     # Make the toplevel
     toplevel $w
     wm title $w "Help"
-  wm geometry $w "550x680+250+50"
+  wm geometry $w "580x730+250+50"
   wm resizable $w 0 0
     # Put a GUI in it
   place [label $w.text1 -text $help_text -justify left -fg blue] -x 20 -y 35 
-    place [button $w.ok -text OK -command [list destroy $w]] -x 460 -y 640
+    place [button $w.ok -text OK -command [list destroy $w]] -x 510 -y 690
 }
 
 #========================================================================================================
