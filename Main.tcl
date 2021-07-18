@@ -291,7 +291,7 @@ cmd-Q -> Quit
 --------------------------
 
 change/edit volume manually by select and key-command '+'/'-'
-
+set volume to 0.0 dB by select and key-command '0'
 
 "
 

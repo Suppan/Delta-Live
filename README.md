@@ -22,7 +22,7 @@ Output:
 Possible Treatments:
 
 - change/edit volume manually by select and key-command '+'/'-'
-
+- set volume to 0.0 dB by select and key-command '0'
 
 ## Download
 [DeltaMix](https://github.com/Suppan/DeltaMix/releases/)
