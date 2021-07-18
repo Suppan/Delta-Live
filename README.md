@@ -54,7 +54,7 @@ Possible Treatments:
 
 
 
-- Pressing the space key to play the first soundfile or move down or up with the arrow keys to select another soundfile for playing.  
+- start patch in SuperCollider (cmd-a and cmd-return): Pressing the space key to play the first soundfile or move down or up with the arrow keys to select another soundfile for playing.  
 
 <div align="center"><img src="/resources/icons/SC_window.png" width="600px"</img></div> 
 
