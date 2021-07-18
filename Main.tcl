@@ -55,13 +55,6 @@ proc TestEntry_onlyZahlenliste {Zeichen} {
     if {[string is digit $Zeichen] || $Zeichen == " "} {return 1} {return 0}
 }
 
-proc round_scaleval {val round} {   
-    if {$round == 0} {expr round($val)} else {
-            set roundx [expr 10 ** $round * 1.0] 
-            expr {round($roundx*$val)/$roundx}} 
-}
-
-
 proc reset_sf_data_List {} {
   global folder_List
   global sf_data_List
