@@ -409,7 +409,7 @@ place .lb_appname -x $x1_line -y 25
 
 #------------------------
 
-ttk::label .lb_single_play -text "single_play?:" -foreground blue
+ttk::label .lb_single_play -text "single_play?:" -foreground #1c79d9
 place .lb_single_play -x $x1_line -y [expr $y_dist * 2]
 
 set single_play 0
@@ -418,7 +418,7 @@ place .check_single_play -x $x2_line -y [expr $y_dist * 2]
 
 #------------------------
 
-ttk::label .lb_device -text "device:" -foreground blue
+ttk::label .lb_device -text "device:" -foreground #1c79d9
 place .lb_device -x $x1_line -y [expr $y_dist * 3]
 
 set device {}
@@ -427,7 +427,7 @@ place .enText_device -x $x2_line -y [expr ($y_dist * 3) - 2]
 
 #------------------------
 
-ttk::label .lb_memsize_power -text "memsize_power:" -foreground blue
+ttk::label .lb_memsize_power -text "memsize_power:" -foreground #1c79d9
 place .lb_memsize_power -x $x1_line -y [expr $y_dist * 4]
 
 set memsize_power 18
@@ -436,7 +436,7 @@ place .enText_memsize_power -x $x2_line -y [expr ($y_dist * 4) - 2]
 
 #------------------------
 
-ttk::label .lb_out_name -text "out_name:" -foreground blue
+ttk::label .lb_out_name -text "out_name:" -foreground #1c79d9
 place .lb_out_name -x $x1_line -y [expr $y_dist * 5]
 
 set out_name "sfPlayer"
