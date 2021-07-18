@@ -39,9 +39,11 @@ Possible Treatments:
 
 <div align="center"><img src="/resources/icons/app.png" width="800px"</img></div>  
 
+
+
 - select a folder/struct:
 
-<div align="center"><img src="/resources/icons/folder-struct.png" width="800px"</img></div>  
+<div align="center"><img src="/resources/icons/folder-struct.png" width="400px"</img></div>  
 
 - eval/write the SuperCollider patch:
 
