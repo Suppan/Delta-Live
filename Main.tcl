@@ -55,6 +55,13 @@ proc TestEntry_onlyZahlenliste {Zeichen} {
     if {[string is digit $Zeichen] || $Zeichen == " "} {return 1} {return 0}
 }
 
+proc round_scaleval {val round} {   
+    if {$round == 0} {expr round($val)} else {
+            set roundx [expr 10 ** $round * 1.0] 
+            expr {round($roundx*$val)/$roundx}} 
+}
+
+
 proc reset_sf_data_List {} {
   global folder_List
   global sf_data_List
@@ -804,7 +811,7 @@ proc write_SC_string {} {
              set chanx [exec mdls -name kMDItemAudioChannelCount -raw $pathx] 
              append str11 [format "    b%s  = Buffer.cueSoundFile(s,sfPath%s  ,0 ,%s);\n" $posx2 $posx2 $chanx]
              set xdB [expr ($button_x + $x0) - 15]
-             set y0 [expr ($rand_y * 1.2) + ($sfx_dist_y * $posy)]
+             set y0 [expr round(($rand_y * 1.2) + ($sfx_dist_y * $posy))]
              set ydB [expr $y0 + 5]
              if {$single_play == 1} { set str19b [format "synth_sf%s.free;" $posx2]} else { set str19b [format "b%s = Buffer.cueSoundFile(s,sfPath%s,0,%s);" $posx2 $posx2 $chanx] }
              if { $posx2 < $len} { set str19c [format "button_sf%s.focus(true);" [expr $posx2 + 1]] } else { set str19c [format "button_sf%s.focus(false);" $posx2]}
