@@ -90,8 +90,7 @@ proc open_new_dir {} {
   # delete existing treeview before
   set len [llength $folder_List]
   for {set x 0} {$x < $len} {incr x} { set Wert [.frame.tv delete "row$x"] }
-
-  set upfile "/Users/wsuppan/Dropbox/2021/Apps/sfPlayerSC-0.1/sounds/A" ;#[file join ".." $curr_Dir]
+  set upfile $curr_Dir
   set all_new_sf {}
   set dir [tk_chooseDirectory -title "New Soundfile Directory" -initialdir $upfile]  
   if {$dir != ""} {
