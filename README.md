@@ -43,7 +43,7 @@ Possible Treatments:
 
 - select a folder/struct:
 
-<div align="center"><img src="/resources/icons/folder-struct.png" width="400px"</img></div>  
+<div align="center"><img src="/resources/icons/folder-struct.png" width="600px"</img></div>  
 
 - eval/write the SuperCollider patch:
 
