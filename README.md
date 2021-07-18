@@ -1,6 +1,6 @@
 # **Delta-Live**
 
-Application for generating a simple GUI based sample player unsing [SuperCollider](https://supercollider.github.io/download) and written in tcl-tk
+Application for generating a simple GUI based sample player using [SuperCollider](https://supercollider.github.io/download) and written in tcl-tk
 
 ## Why?
 
