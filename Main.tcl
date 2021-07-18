@@ -216,7 +216,7 @@ proc update_m_data {data} {
   
   .lb_saved_path configure -text ""
 
-  if {$folder_List > 0} {
+  if {[llength $folder_List] > 0} {
      set len [llength $folder_List]
      for {set x 0} {$x < $len} {incr x} { set Wert [.frame.tv delete "row$x"] }
   }
