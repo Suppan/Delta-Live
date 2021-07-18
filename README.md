@@ -49,7 +49,7 @@ Possible Treatments:
 
 - eval/write the SuperCollider patch:
 
-<div align="center"><img src="/resources/icons/Code.png" width="600px"</img></div> 
+<div align="center"><img src="/resources/icons/Code.png" width="800px"</img></div> 
 
 
 
