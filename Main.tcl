@@ -273,36 +273,25 @@ set help_text "Delta-Live help
 1. key-commands:
 --------------------
 
-up-arrow and down-arrow (shift) -> edit value of selected points
-left-arrow and right-arrow -> move selection
-press 0 -> set selected parameter (dx/dB/tr) to default (0)
-press o -> opens selected sf (with changed param dB and tr)
+cmd-E -> eval and write the patch for SuperCollider (*.scd)
+cmd-N -> choose new directory (soundfiles)
 
-cmd-1 -> edit dx (time intervals)
-cmd-2 -> edit volume (dB)
-cmd-3 -> edit transposition (halftones)
+after choosung one or more folders with soundfiles: 
+each folder becomes a row in the SuperCollider window
+(ie. one folder -> one single row)
 
-cmd-E -> eval Csound
-cmd-L -> lock *ut* (universal-time for 'set rnd dx')
-cmd-shift-L -> unlock *ut* (universal-time for 'set rnd dx')
-
-cmd-opt-N -> choose new directory (soundfiles)
-cmd-; -> open Win to set Preferences (path to csound and deault soundfile directory)
-
-cmd-opt-R -> set new order of soundfiles and set dx 
-cmd-opt-0 -> rest order of soundfiles and set all dx to 1 / all dB to 0 / all Tr to 0
+cmd-S -> save all data ('*.m_data') to a new file
+cmd-I -> import all data ('*.m_data') 
 
 cmd-Q -> Quit
 
 
-----------------------------------------
-2. mouse-actions (sf + edit window):
-----------------------------------------
+--------------------------
+1. Possible Treatments:
+--------------------------
 
-click on point (shift) -> select (extend selection)
-click on dx/dB/tr value (shift) -> select (extend selection)
-click/hold and move -> make rectangle for selection
-double-click on sf-name -> open sf (default)
+change/edit volume manually by select and key-command '+'/'-'
+
 
 "
 
@@ -558,10 +547,14 @@ place .b_save_m_data -x 500 -y 650
 ttk::button .b_import_m_data -text "Import" -command { import_m_data_dialog }
 place .b_import_m_data -x 640 -y 650
 
+ttk::label .lb_info_key -text "press h -> opens help window"  -font "menlo 11" -foreground gray
+place .lb_info_key -x 30 -y 625
 
 set saved_path {}
 ttk::label .lb_saved_path -text $saved_path  -font "menlo 10" -foreground gray
 place .lb_saved_path -x 30 -y 690
+
+
 
 #========================================================================================================
 #
