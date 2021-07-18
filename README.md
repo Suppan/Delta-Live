@@ -45,9 +45,13 @@ Possible Treatments:
 
 <div align="center"><img src="/resources/icons/folder-struct.png" width="600px"</img></div>  
 
+
+
 - eval/write the SuperCollider patch:
 
 <div align="center"><img src="/resources/icons/Code.png" width="600px"</img></div> 
+
+
 
 - Pressing the space key to play the first soundfile or move down or up with the arrow keys to select another soundfile for playing.  
 
