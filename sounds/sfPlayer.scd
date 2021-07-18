@@ -43,7 +43,7 @@ s.waitForBoot({
     dBsf2   =     0.0;
     dBsf3   =     0.0;
     dBsf4   =     0.0;
-    dBsf5   =    -4.0;
+    dBsf5   =    -5.0;
     dBsf6   =     0.0;
     dBsf7   =     0.0;
     dBsf8   =     0.0;

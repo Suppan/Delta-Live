@@ -36,6 +36,7 @@ Possible Treatments:
 ## How to use
 
 - start the application with the terminal command 'wish Main.tcl':
+- load a new soundfile directory:
 
 <div align="center"><img src="/resources/icons/app.png" width="800px"</img></div>  
 
