@@ -160,8 +160,7 @@ proc count_sfx_in_folder_List {folder_List} {
     if {$lenx > 0} {set counterx [expr $counterx + $lenx]} else { 
                 # break if one subdir contains no soundfiles
                 set counterx 0
-                break
-                }
+                break }
     }
   return $counterx
 }
