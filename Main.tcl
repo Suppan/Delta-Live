@@ -88,19 +88,25 @@ proc open_new_dir {} {
   global curr_Dir
   global folder_List
   # delete existing treeview before
-  set len [llength $folder_List]
-  for {set x 0} {$x < $len} {incr x} { set Wert [.frame.tv delete "row$x"] }
+  set test_len1 [llength $folder_List]
+  for {set x 0} {$x < $test_len1} {incr x} { set Wert [.frame.tv delete "row$x"] }
   set upfile $curr_Dir
   set all_new_sf {}
   set dir [tk_chooseDirectory -title "New Soundfile Directory" -initialdir $upfile]  
   if {$dir != ""} {
+  # look if its one folder...
   set filename [glob -nocomplain -directory $dir -type f *{.wav,.WAV,.aif,.aiff,.AIF,.AIFF}*]
   if {$filename == ""} {set folder_List [lsort -dictionary -increasing -nocase [glob -directory $dir -type d *]]} else {
     set folder_List [list $dir]}
-  set curr_Dir $dir
-  set short_foldername [file tail $dir]
-  wm title . [format "sf Dir: $dir/"]
-  reset_sf_data_List 
+    set test_len2 [count_sfx_in_folder_List $folder_List]
+    if {$test_len2 > 0} {
+    set curr_Dir $dir
+    set short_foldername [file tail $dir]
+    wm title . [format "sf Dir: $dir/"]
+    reset_sf_data_List } else {  set folder_List {}
+                                tk_messageBox -message "No soundfiles in this directory (or in one subdirectory)!" -icon warning -type ok
+                                open_new_dir
+                             }
   }
 }
 
@@ -145,6 +151,21 @@ proc get_channel_list {} {
     lappend bag $chanx }}
   return $bag
 }
+
+proc count_sfx_in_folder_List {folder_List} {
+  set counterx 0
+ foreach rowx $folder_List {
+    set resx [glob -nocomplain -directory $rowx -type f *{.wav,.WAV,.aif,.aiff,.AIF,.AIFF}*]
+    set lenx [llength $resx] 
+    if {$lenx > 0} {set counterx [expr $counterx + $lenx]} else { 
+                # break if one subdir contains no soundfiles
+                set counterx 0
+                break
+                }
+    }
+  return $counterx
+}
+
 
 proc make_m_data {} {
   global single_play
