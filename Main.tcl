@@ -358,7 +358,7 @@ proc mk_Help_Win {} {
 
 set geometry_start "820x720+250+50"
 
-wm title . [format "soundfile Dir: ~/$dirtail/"]
+wm title . "sf Dir: \[empty...\]"
 wm resizable . 0 0
 wm geometry . $geometry_start
 
