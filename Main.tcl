@@ -17,23 +17,10 @@
 
 package require Tk
 
-#========================================================================================================
-#
-#
-#
-#                                         Global Vars
-#
-#
-#
-#========================================================================================================
-
-set app_Dir0 [ file dirname [ file normalize [ info script ] ] ]
-set app_Dir "$app_Dir0/"
-set curr_Dir {}
-set dirtail {}
-set m_data [dict create]
-set folder_List {}
-set sf_data_List {}
+set ::curr_Dir {}
+set ::m_data [dict create]
+set ::folder_List {}
+set ::sf_data_List {}
 
 #========================================================================================================
 #
@@ -50,21 +37,13 @@ proc TestEntry_onlyZahl {Zeichen} {
     return [string is digit $Zeichen]
     }
 
-# -validate key -validatecommand {TestEntry_onlyZahlenliste %S}
-proc TestEntry_onlyZahlenliste {Zeichen} {
-    if {[string is digit $Zeichen] || $Zeichen == " "} {return 1} {return 0}
-}
-
 proc reset_sf_data_List {} {
-  global folder_List
-  global sf_data_List
-
   set rowx 0
-  set sf_data_List {} 
+  set ::sf_data_List {} 
 
   .lb_saved_path configure -text ""
 
-  foreach pathx $folder_List {
+  foreach pathx $::folder_List {
     set sf_listx [lsort -dictionary -increasing -nocase [glob -directory $pathx -type f *{.wav,.WAV,.aif,.aiff,.AIF,.AIFF}*]]
     set row_name [file tail $pathx]
     set data_bag {}
@@ -79,31 +58,29 @@ proc reset_sf_data_List {} {
       .frame.tv insert "row$rowx" end -values $valuesx 
       incr posx}
 
-      lappend sf_data_List $data_bag
+      lappend ::sf_data_List $data_bag
   incr rowx 
   }
 }
 
 proc open_new_dir {} {
-  global curr_Dir
-  global folder_List
   # delete existing treeview before
-  set test_len1 [llength $folder_List]
+  set test_len1 [llength $::folder_List]
   for {set x 0} {$x < $test_len1} {incr x} { set Wert [.frame.tv delete "row$x"] }
-  set upfile $curr_Dir
+  set upfile $::curr_Dir
   set all_new_sf {}
   set dir [tk_chooseDirectory -title "New Soundfile Directory" -initialdir $upfile]  
   if {$dir != ""} {
   # look if its one folder...
   set filename [glob -nocomplain -directory $dir -type f *{.wav,.WAV,.aif,.aiff,.AIF,.AIFF}*]
-  if {$filename == ""} {set folder_List [lsort -dictionary -increasing -nocase [glob -directory $dir -type d *]]} else {
-    set folder_List [list $dir]}
-    set test_len2 [count_sfx_in_folder_List $folder_List]
+  if {$filename == ""} {set ::folder_List [lsort -dictionary -increasing -nocase [glob -directory $dir -type d *]]} else {
+    set ::folder_List [list $dir]}
+    set test_len2 [count_sfx_in_folder_List $::folder_List]
     if {$test_len2 > 0} {
-    set curr_Dir $dir
+    set ::curr_Dir $dir
     set short_foldername [file tail $dir]
     wm title . [format "sf Dir: $dir/"]
-    reset_sf_data_List } else {  set folder_List {}
+    reset_sf_data_List } else {  set ::folder_List {}
                                 tk_messageBox -message "No soundfiles in this directory (or in one subdirectory)!" -icon warning -type ok
                                 open_new_dir
                              }
@@ -111,8 +88,7 @@ proc open_new_dir {} {
 }
 
 proc open_sound_folder {} {
-  global curr_Dir
-  exec open $curr_Dir
+  exec open $::curr_Dir
 }
 
 proc read_file {Path} {
@@ -131,9 +107,8 @@ proc write_file {str path} {
 }
 
 proc get_sf_row_max {} {
-  global sf_data_List
   set x {}
-  foreach xx $sf_data_List {
+  foreach xx $::sf_data_List {
     set lenx [llength $xx]
     if {$x == ""} {set x $lenx} else {
       if {$lenx > $x} {set x $lenx}
@@ -142,9 +117,8 @@ proc get_sf_row_max {} {
 }
 
 proc get_channel_list {} {
-  global sf_data_List
   set bag {}
- foreach rowx $sf_data_List {
+ foreach rowx $::sf_data_List {
    foreach sfx $rowx {
     set pathx [lindex $sfx 0]
     set chanx [exec mdls -name kMDItemAudioChannelCount -raw $pathx] 
@@ -165,87 +139,46 @@ proc count_sfx_in_folder_List {folder_List} {
   return $counterx
 }
 
-
 proc make_m_data {} {
-  global single_play
-  global device
-  global memsize_power
-  global out_name
-  global row_font
-  global row_font_size
-  global sfx_font
-  global sfx_font_size
-  global row_dist_x
-  global sfx_dist_y
-  global button_x
-  global button_y
-  global rand_x
-  global rand_y
-  global open_scd
-  global curr_Dir
-  global folder_List
-  global sf_data_List
-
-  set data_pairs [list "single_play" $single_play "device" $device "memsize_power" $memsize_power "out_name" $out_name "row_font" $row_font "row_font_size" $row_font_size\
-    "sfx_font" $sfx_font "sfx_font_size" $sfx_font_size "row_dist_x" $row_dist_x "sfx_dist_y" $sfx_dist_y "button_x" $button_x "button_y" $button_y "rand_x" $rand_x "rand_y" $rand_y\
-    "open_scd" $open_scd "curr_Dir" $curr_Dir "folder_List" $folder_List "sf_data_List" $sf_data_List]
-
+  set data_pairs [list "single_play" $::single_play "device" $::device "memsize_power" $::memsize_power "out_name" $::out_name "row_font" $::row_font "row_font_size" $::row_font_size\
+    "sfx_font" $::sfx_font "sfx_font_size" $::sfx_font_size "row_dist_x" $::row_dist_x "sfx_dist_y" $::sfx_dist_y "button_x" $::button_x "button_y" $::button_y "rand_x" $::rand_x "rand_y" $::rand_y\
+    "open_scd" $::open_scd "curr_Dir" $::curr_Dir "folder_List" $::folder_List "sf_data_List" $::sf_data_List]
   return $data_pairs
 }
 
 proc update_m_data {data} {
-  global single_play
-  global device
-  global memsize_power
-  global out_name
-  global row_font
-  global row_font_size
-  global sfx_font
-  global sfx_font_size
-  global row_dist_x
-  global sfx_dist_y
-  global button_x
-  global button_y
-  global rand_x
-  global rand_y
-  global open_scd
-  global curr_Dir
-  global folder_List
-  global sf_data_List
-  global m_data
+  set ::m_data {}
+  set ::m_data [dict create]
+  set ::m_data $data
+  set ::single_play [dict get $::m_data single_play]
+  set ::device [dict get $::m_data device]
+  set ::memsize_power [dict get $::m_data memsize_power]
+  set ::out_name [dict get $::m_data out_name]
+  set ::row_font [dict get $::m_data row_font]
+  set ::row_font_size [dict get $::m_data row_font_size]
+  set ::sfx_font [dict get $::m_data sfx_font]
+  set ::sfx_font_size [dict get $::m_data sfx_font_size]
+  set ::row_dist_x [dict get $::m_data row_dist_x]
+  set ::sfx_dist_y [dict get $::m_data sfx_dist_y]
+  set ::rand_x [dict get $::m_data rand_x]
+  set ::rand_y [dict get $::m_data rand_y]
+  set ::open_scd [dict get $::m_data open_scd]
+  set ::curr_Dir [dict get $::m_data curr_Dir]
 
-  set m_data {}
-  set m_data [dict create]
-  set m_data $data
-  set single_play [dict get $m_data single_play]
-  set device [dict get $m_data device]
-  set memsize_power [dict get $m_data memsize_power]
-  set out_name [dict get $m_data out_name]
-  set row_font [dict get $m_data row_font]
-  set row_font_size [dict get $m_data row_font_size]
-  set sfx_font [dict get $m_data sfx_font]
-  set sfx_font_size [dict get $m_data sfx_font_size]
-  set row_dist_x [dict get $m_data row_dist_x]
-  set sfx_dist_y [dict get $m_data sfx_dist_y]
-  set rand_x [dict get $m_data rand_x]
-  set rand_y [dict get $m_data rand_y]
-  set open_scd [dict get $m_data open_scd]
-  set curr_Dir [dict get $m_data curr_Dir]
-
-  wm title . [format "sf Dir: $curr_Dir/"]
+  wm title . [format "sf Dir: $::curr_Dir/"]
   
   .lb_saved_path configure -text ""
 
-  if {[llength $folder_List] > 0} {
-     set len [llength $folder_List]
+  if {[llength $::folder_List] > 0} {
+     set len [llength $::folder_List]
      for {set x 0} {$x < $len} {incr x} { set Wert [.frame.tv delete "row$x"] }
   }
 
-  set folder_List [dict get $m_data folder_List]
-  set sf_data_List [dict get $m_data sf_data_List]
+  set ::folder_List [dict get $::m_data folder_List]
+  set ::sf_data_List [dict get $::m_data sf_data_List]
 
   set rowx 0
-  foreach pathx $folder_List sf_listx $sf_data_List {
+  foreach pathx $::folder_List sf_listx $::sf_data_List {
         set row_name [file tail $pathx]
         set posx 0
         .frame.tv insert {} end -id "row$rowx" -text $row_name
@@ -261,21 +194,17 @@ proc update_m_data {data} {
 }
 
 proc save_m_data_dialog {} {
-  global sf_data_List
-  global out_name
-  if {$sf_data_List != ""} {
-  set name "$out_name-1"
+  if {$::sf_data_List != ""} {
+  set name "$::out_name-1"
    set file [tk_getSaveFile -title "Save Data" -parent . -defaultextension ".m_data" -initialfile $name]
    if { $file == "" } {
         return; # they clicked cancel
-      } else { set m_data [make_m_data]
-              write_file $m_data $file }
+      } else { set ::m_data [make_m_data]
+              write_file $::m_data $file }
   } else { tk_messageBox -message "Select a soundfile directory first!" -icon warning -type ok }
  }
 
 proc import_m_data_dialog {} {
-  global sf_data_List
-
   set types {
     {{Text Files}       {.m_data}        }}
 
@@ -288,7 +217,7 @@ proc import_m_data_dialog {} {
        }
  }
 
-set help_text "Delta-Live help
+set ::help_text "Delta-Live help
 
 --------------------
 1. key-commands:
@@ -330,19 +259,18 @@ out_name -> name of the Patch (*.scd)
 
 "
 
-set counter1 0
+set ::counter1 0
 
 proc mk_Help_Win {} {
     # Make a unique widget name
-  global help_text
-    set w .gui[incr counter1]
+    set w .gui[incr ::counter1]
     # Make the toplevel
     toplevel $w
     wm title $w "Help"
   wm geometry $w "580x730+250+50"
   wm resizable $w 0 0
     # Put a GUI in it
-  place [label $w.text1 -text $help_text -justify left -fg blue] -x 20 -y 35 
+  place [label $w.text1 -text $::help_text -justify left -fg blue] -x 20 -y 35 
     place [button $w.ok -text OK -command [list destroy $w]] -x 510 -y 690
 }
 
@@ -439,7 +367,7 @@ set x2_line 640
 set y_dist 37
 #------------------------
 
-ttk::label .lb_appname -text "Delta-Live v0.12"  -font "menlo 24" 
+ttk::label .lb_appname -text "Delta-Live v0.13"  -font "menlo 24" 
 place .lb_appname -x $x1_line -y 25
 
 #------------------------
@@ -447,8 +375,8 @@ place .lb_appname -x $x1_line -y 25
 ttk::label .lb_single_play -text "single_play?:" -foreground #1c79d9
 place .lb_single_play -x $x1_line -y [expr $y_dist * 2]
 
-set single_play 0
-ttk::checkbutton .check_single_play  -text "" -variable single_play
+set ::single_play 0
+ttk::checkbutton .check_single_play  -text "" -variable ::single_play
 place .check_single_play -x $x2_line -y [expr $y_dist * 2]
 
 #------------------------
@@ -456,8 +384,8 @@ place .check_single_play -x $x2_line -y [expr $y_dist * 2]
 ttk::label .lb_device -text "device:" -foreground #1c79d9
 place .lb_device -x $x1_line -y [expr $y_dist * 3]
 
-set device {}
-ttk::entry .enText_device  -textvariable device -width 15
+set ::device {}
+ttk::entry .enText_device  -textvariable ::device -width 15
 place .enText_device -x $x2_line -y [expr ($y_dist * 3) - 2]
 
 #------------------------
@@ -465,8 +393,8 @@ place .enText_device -x $x2_line -y [expr ($y_dist * 3) - 2]
 ttk::label .lb_memsize_power -text "memsize_power:" -foreground #1c79d9
 place .lb_memsize_power -x $x1_line -y [expr $y_dist * 4]
 
-set memsize_power 18
-ttk::entry .enText_memsize_power  -textvariable memsize_power -width 5 -validate key -validatecommand {TestEntry_onlyZahl %S}
+set ::memsize_power 18
+ttk::entry .enText_memsize_power  -textvariable ::memsize_power -width 5 -validate key -validatecommand {TestEntry_onlyZahl %S}
 place .enText_memsize_power -x $x2_line -y [expr ($y_dist * 4) - 2]
 
 #------------------------
@@ -474,8 +402,8 @@ place .enText_memsize_power -x $x2_line -y [expr ($y_dist * 4) - 2]
 ttk::label .lb_out_name -text "out_name:" -foreground #1c79d9
 place .lb_out_name -x $x1_line -y [expr $y_dist * 5]
 
-set out_name "sfPlayer"
-ttk::entry .enText_out_name  -textvariable out_name -width 15
+set ::out_name "sfPlayer"
+ttk::entry .enText_out_name  -textvariable ::out_name -width 15
 place .enText_out_name -x $x2_line -y [expr ($y_dist * 5) - 2]
 
 #------------------------
@@ -483,15 +411,15 @@ place .enText_out_name -x $x2_line -y [expr ($y_dist * 5) - 2]
 ttk::label .lb_row_font -text "row_font:" -foreground gray
 place .lb_row_font -x $x1_line -y [expr $y_dist * 7]
 
-set row_font "Arial"
-ttk::entry .enText_row_font  -textvariable row_font -width 15
+set ::row_font "Arial"
+ttk::entry .enText_row_font  -textvariable ::row_font -width 15
 place .enText_row_font -x $x2_line -y [expr ($y_dist * 7) - 2]
 
 ttk::label .lb_row_font_size -text "row_font_size:" -foreground gray
 place .lb_row_font_size -x $x1_line -y [expr $y_dist * 8]
 
-set row_font_size 24
-ttk::entry .enText_row_font_size  -textvariable row_font_size -width 5  -validate key -validatecommand {TestEntry_onlyZahl %S}
+set ::row_font_size 24
+ttk::entry .enText_row_font_size  -textvariable ::row_font_size -width 5  -validate key -validatecommand {TestEntry_onlyZahl %S}
 place .enText_row_font_size -x $x2_line -y [expr ($y_dist * 8) - 2]
 
 #------------------------
@@ -499,15 +427,15 @@ place .enText_row_font_size -x $x2_line -y [expr ($y_dist * 8) - 2]
 ttk::label .lb_sfx_font -text "sfx_font:" -foreground gray
 place .lb_sfx_font -x $x1_line -y [expr $y_dist * 9]
 
-set sfx_font "Courir"
-ttk::entry .enText_sfx_font  -textvariable sfx_font -width 15
+set ::sfx_font "Courir"
+ttk::entry .enText_sfx_font  -textvariable ::sfx_font -width 15
 place .enText_sfx_font -x $x2_line -y [expr ($y_dist * 9) - 2]
 
 ttk::label .lb_sfx_font_size -text "sfx_font_size:" -foreground gray
 place .lb_sfx_font_size -x $x1_line -y [expr $y_dist * 10]
 
-set sfx_font_size 12
-ttk::entry .enText_sfx_font_size  -textvariable sfx_font_size -width 5  -validate key -validatecommand {TestEntry_onlyZahl %S}
+set ::sfx_font_size 12
+ttk::entry .enText_sfx_font_size  -textvariable ::sfx_font_size -width 5  -validate key -validatecommand {TestEntry_onlyZahl %S}
 place .enText_sfx_font_size -x $x2_line -y [expr ($y_dist * 10) - 2]
 
 #------------------------
@@ -515,8 +443,8 @@ place .enText_sfx_font_size -x $x2_line -y [expr ($y_dist * 10) - 2]
 ttk::label .lb_row_dist_x -text "row_dist_x:" -foreground gray
 place .lb_row_dist_x -x $x1_line -y [expr $y_dist * 11]
 
-set row_dist_x 200
-ttk::entry .enText_row_dist_x  -textvariable row_dist_x -width 5 -validate key -validatecommand {TestEntry_onlyZahl %S}
+set ::row_dist_x 200
+ttk::entry .enText_row_dist_x  -textvariable ::row_dist_x -width 5 -validate key -validatecommand {TestEntry_onlyZahl %S}
 place .enText_row_dist_x -x $x2_line -y [expr ($y_dist * 11) - 2]
 
 #------------------------
@@ -524,16 +452,16 @@ place .enText_row_dist_x -x $x2_line -y [expr ($y_dist * 11) - 2]
 ttk::label .lb_sfx_dist_y -text "sfx_dist_y:" -foreground gray
 place .lb_sfx_dist_y -x $x1_line -y [expr $y_dist * 12]
 
-set sfx_dist_y 50
-ttk::entry .enText_sfx_dist_y  -textvariable sfx_dist_y -width 5 -validate key -validatecommand {TestEntry_onlyZahl %S}
+set ::sfx_dist_y 50
+ttk::entry .enText_sfx_dist_y  -textvariable ::sfx_dist_y -width 5 -validate key -validatecommand {TestEntry_onlyZahl %S}
 place .enText_sfx_dist_y -x $x2_line -y [expr ($y_dist * 12) - 2]
 #------------------------
 
 ttk::label .lb_button_x -text "button_x:" -foreground gray
 place .lb_button_x -x $x1_line -y [expr $y_dist * 13]
 
-set button_x 140
-ttk::entry .enText_button_x  -textvariable button_x -width 5 -validate key -validatecommand {TestEntry_onlyZahl %S}
+set ::button_x 140
+ttk::entry .enText_button_x  -textvariable ::button_x -width 5 -validate key -validatecommand {TestEntry_onlyZahl %S}
 place .enText_button_x -x $x2_line -y [expr ($y_dist * 13) - 2]
 
 #------------------------
@@ -541,8 +469,8 @@ place .enText_button_x -x $x2_line -y [expr ($y_dist * 13) - 2]
 ttk::label .lb_button_y -text "button_y:" -foreground gray
 place .lb_button_y -x $x1_line -y [expr $y_dist * 14]
 
-set button_y 36
-ttk::entry .enText_button_y  -textvariable button_y -width 5 -validate key -validatecommand {TestEntry_onlyZahl %S}
+set ::button_y 36
+ttk::entry .enText_button_y  -textvariable ::button_y -width 5 -validate key -validatecommand {TestEntry_onlyZahl %S}
 place .enText_button_y -x $x2_line -y [expr ($y_dist * 14) - 2]
 
 #------------------------
@@ -550,8 +478,8 @@ place .enText_button_y -x $x2_line -y [expr ($y_dist * 14) - 2]
 ttk::label .lb_rand_x -text "rand_x:" -foreground gray
 place .lb_rand_x -x $x1_line -y [expr $y_dist * 15]
 
-set rand_x 40
-ttk::entry .enText_rand_x  -textvariable rand_x -width 5 -validate key -validatecommand {TestEntry_onlyZahl %S}
+set ::rand_x 40
+ttk::entry .enText_rand_x  -textvariable ::rand_x -width 5 -validate key -validatecommand {TestEntry_onlyZahl %S}
 place .enText_rand_x -x $x2_line -y [expr ($y_dist * 15) - 2]
 
 #------------------------
@@ -559,8 +487,8 @@ place .enText_rand_x -x $x2_line -y [expr ($y_dist * 15) - 2]
 ttk::label .lb_rand_y -text "rand_y:" -foreground gray
 place .lb_rand_y -x $x1_line -y [expr $y_dist * 16]
 
-set rand_y 36
-ttk::entry .enText_rand_y  -textvariable rand_y -width 5 -validate key -validatecommand {TestEntry_onlyZahl %S}
+set ::rand_y 36
+ttk::entry .enText_rand_y  -textvariable ::rand_y -width 5 -validate key -validatecommand {TestEntry_onlyZahl %S}
 place .enText_rand_y -x $x2_line -y [expr ($y_dist * 16) - 2]
 
 #------------------------
@@ -571,8 +499,8 @@ place .bt -x 30 -y 650
 ttk::button .btest -text "Eval" -command { save_SC_file }
 place .btest -x 160 -y 650
 
-set open_scd 1
-ttk::checkbutton .check_open_scd  -text "open in SC?" -variable open_scd
+set ::open_scd 1
+ttk::checkbutton .check_open_scd  -text "open in SC?" -variable ::open_scd
 place .check_open_scd -x 280 -y 657
 
 
@@ -585,8 +513,8 @@ place .b_import_m_data -x 640 -y 650
 ttk::label .lb_info_key -text "press h -> opens help window"  -font "menlo 11" -foreground gray
 place .lb_info_key -x 30 -y 625
 
-set saved_path {}
-ttk::label .lb_saved_path -text $saved_path  -font "menlo 10" -foreground gray
+set ::saved_path {}
+ttk::label .lb_saved_path -text $::saved_path  -font "menlo 10" -foreground gray
 place .lb_saved_path -x 30 -y 690
 
 
@@ -611,12 +539,12 @@ bind . <KeyPress-0> {
     set rowx [lindex $Wert 0] 
     set posx [lindex $Wert 1] 
     set path_short [lindex $Wert 2] 
-    set old_rowx [lindex $sf_data_List $rowx]
+    set old_rowx [lindex $::sf_data_List $rowx]
     set old_elemx [lindex $old_rowx $posx]
     set path_long [lindex $old_elemx 0]
     set new_elemx [list $path_long 0.0]
     set new_rowx [lreplace $old_rowx $posx $posx $new_elemx]
-    set sf_data_List [lreplace $sf_data_List $rowx $rowx $new_rowx]
+    set ::sf_data_List [lreplace $::sf_data_List $rowx $rowx $new_rowx]
     .frame.tv item $Element -value [list $rowx $posx $path_short 0.0]
     }
   }
@@ -632,12 +560,12 @@ bind . <KeyPress-KP_0> {
     set rowx [lindex $Wert 0] 
     set posx [lindex $Wert 1] 
     set path_short [lindex $Wert 2] 
-    set old_rowx [lindex $sf_data_List $rowx]
+    set old_rowx [lindex $::sf_data_List $rowx]
     set old_elemx [lindex $old_rowx $posx]
     set path_long [lindex $old_elemx 0]
     set new_elemx [list $path_long 0.0]
     set new_rowx [lreplace $old_rowx $posx $posx $new_elemx]
-    set sf_data_List [lreplace $sf_data_List $rowx $rowx $new_rowx]
+    set ::sf_data_List [lreplace $::sf_data_List $rowx $rowx $new_rowx]
     .frame.tv item $Element -value [list $rowx $posx $path_short 0.0]
     }
   }
@@ -654,13 +582,13 @@ bind . <KeyPress-plus> {
     set posx [lindex $Wert 1] 
     set path_short [lindex $Wert 2] 
     set mulx [lindex $Wert 3]
-    if {$mulx < 0 } { set old_rowx [lindex $sf_data_List $rowx]
+    if {$mulx < 0 } { set old_rowx [lindex $::sf_data_List $rowx]
                       set old_elemx [lindex $old_rowx $posx]
                       set path_long [lindex $old_elemx 0]
                       set new_elemx [list $path_long [expr $mulx + 1.0]]
                       set new_rowx [lreplace $old_rowx $posx $posx $new_elemx]
                       .frame.tv item $Element -value [list $rowx $posx $path_short [expr $mulx + 1.0]]
-                      set sf_data_List [lreplace $sf_data_List $rowx $rowx $new_rowx] 
+                      set ::sf_data_List [lreplace $::sf_data_List $rowx $rowx $new_rowx] 
                       } { bell }
     }
   }
@@ -677,12 +605,12 @@ bind . <KeyPress-minus> {
     set posx [lindex $Wert 1] 
     set path_short [lindex $Wert 2] 
     set mulx [lindex $Wert 3]
-    set old_rowx [lindex $sf_data_List $rowx]
+    set old_rowx [lindex $::sf_data_List $rowx]
     set old_elemx [lindex $old_rowx $posx]
     set path_long [lindex $old_elemx 0]
     set new_elemx [list $path_long [expr $mulx - 1.0]]
     set new_rowx [lreplace $old_rowx $posx $posx $new_elemx]
-    set sf_data_List [lreplace $sf_data_List $rowx $rowx $new_rowx]
+    set ::sf_data_List [lreplace $::sf_data_List $rowx $rowx $new_rowx]
     .frame.tv item $Element -value [list $rowx $posx $path_short [expr $mulx - 1.0]]
     }
   }
@@ -699,13 +627,13 @@ bind . <Key-KP_Add> {
     set posx [lindex $Wert 1] 
     set path_short [lindex $Wert 2] 
     set mulx [lindex $Wert 3]
-    if {$mulx < 0 } { set old_rowx [lindex $sf_data_List $rowx]
+    if {$mulx < 0 } { set old_rowx [lindex $::sf_data_List $rowx]
                       set old_elemx [lindex $old_rowx $posx]
                       set path_long [lindex $old_elemx 0]
                       set new_elemx [list $path_long [expr $mulx + 1.0]]
                       set new_rowx [lreplace $old_rowx $posx $posx $new_elemx]
                       .frame.tv item $Element -value [list $rowx $posx $path_short [expr $mulx + 1.0]]
-                      set sf_data_List [lreplace $sf_data_List $rowx $rowx $new_rowx] 
+                      set ::sf_data_List [lreplace $::sf_data_List $rowx $rowx $new_rowx] 
                       } { bell }
     }
   }
@@ -722,12 +650,12 @@ bind . <Key-KP_Subtract> {
     set posx [lindex $Wert 1] 
     set path_short [lindex $Wert 2] 
     set mulx [lindex $Wert 3]
-    set old_rowx [lindex $sf_data_List $rowx]
+    set old_rowx [lindex $::sf_data_List $rowx]
     set old_elemx [lindex $old_rowx $posx]
     set path_long [lindex $old_elemx 0]
     set new_elemx [list $path_long [expr $mulx - 1.0]]
     set new_rowx [lreplace $old_rowx $posx $posx $new_elemx]
-    set sf_data_List [lreplace $sf_data_List $rowx $rowx $new_rowx]
+    set ::sf_data_List [lreplace $::sf_data_List $rowx $rowx $new_rowx]
     .frame.tv item $Element -value [list $rowx $posx $path_short [expr $mulx - 1.0]]
     }
   }
@@ -744,46 +672,28 @@ bind . <Key-KP_Subtract> {
 #========================================================================================================
 
 proc write_SC_string {} {
-  global sf_data_List
-  global folder_List
-  global memsize_power
-  global device
-  global curr_Dir
-  global out_name
-  global row_dist_x
-  global rand_x
-  global sfx_dist_y
-  global rand_y
-  global single_play
-  global button_x
-  global button_y
-  global row_font
-  global row_font_size
-  global sfx_font
-  global sfx_font_size
-
   set chan_list [get_channel_list]
   set len [llength $chan_list]
   set str1 {}
   set str2 {}
   set str3 {}
   set str4 {}
-  if {$device != ""} {set str5 [format "s.options.device = \"%s\";    //ServerOptions.devices;" $device] } else { 
+  if {$::device != ""} {set str5 [format "s.options.device = \"%s\";    //ServerOptions.devices;" $::device] } else { 
                       set str5 [format "//s.options.device = \"Fireface 400 (F0C)\";    //ServerOptions.devices;"]}
-  set str6 $memsize_power
-  set str7 [expr 2 ** $memsize_power]
+  set str6 $::memsize_power
+  set str7 [expr 2 ** $::memsize_power]
   set str8 {}
-  set str9 [format "sfPath0  = \"%s/\";" $curr_Dir]
+  set str9 [format "sfPath0  = \"%s/\";" $::curr_Dir]
   set str10 {}
   set str11 {}
-  set str12 $out_name
-  set n_rows [llength $folder_List]
-  set win_x [expr round(($row_dist_x * $n_rows) + ($rand_x * 1.5))]
+  set str12 $::out_name
+  set n_rows [llength $::folder_List]
+  set win_x [expr round(($::row_dist_x * $n_rows) + ($::rand_x * 1.5))]
   if {$win_x > 700} {set str13 $win_x } else { set str13 700 }
-  set win_y  [expr round(($sfx_dist_y * [get_sf_row_max]) + ($rand_y * 2.0))]
+  set win_y  [expr round(($::sfx_dist_y * [get_sf_row_max]) + ($::rand_y * 2.0))]
   set str14 $win_y
   set str15 [expr $win_y -30]
-  if {$single_play == 1} {set str16 [format "- single-play-modus is on!"]} else {set str16 [format "- replay: reselect and press space twice!"]}
+  if {$::single_play == 1} {set str16 [format "- single-play-modus is on!"]} else {set str16 [format "- replay: reselect and press space twice!"]}
   set str17 {}
   set chan_list_no_dups [lsort -unique -integer $chan_list]
   set str18 {}
@@ -800,13 +710,13 @@ proc write_SC_string {} {
 
   set posx 0
   set row_posx 0
-  foreach rowx $sf_data_List foldernamex $folder_List {
+  foreach rowx $::sf_data_List foldernamex $::folder_List {
       set short_foldernamex [file tail $foldernamex]
       append str8 [format "    //%s:\n" $short_foldernamex]
-      set x0 [expr $rand_x + ($row_dist_x * $row_posx)]
-      set x0b [expr round($x0 - ($rand_x / 4.0))]
-      set x1 [expr $button_x + $rand_x]
-      append str17 [format "    StaticText(w, Rect(%s,10,%s,30)).string_(\"%s\").font_(Font(\"%s\", %s, true)).stringColor_(Color.black).align_(\\center);\n" $x0b $x1 $short_foldernamex $row_font $row_font_size]
+      set x0 [expr $::rand_x + ($::row_dist_x * $row_posx)]
+      set x0b [expr round($x0 - ($::rand_x / 4.0))]
+      set x1 [expr $::button_x + $::rand_x]
+      append str17 [format "    StaticText(w, Rect(%s,10,%s,30)).string_(\"%s\").font_(Font(\"%s\", %s, true)).stringColor_(Color.black).align_(\\center);\n" $x0b $x1 $short_foldernamex $::row_font $::row_font_size]
       set posy 0
              foreach sfx $rowx {
              set posx2 [expr $posx + 1]
@@ -822,10 +732,10 @@ proc write_SC_string {} {
                                   append str10 [format "    sfPath%s  = sfPath0 ++ \"%s/%s\";\n" $posx2 $short_foldernamex $short_sfx] }
              set chanx [exec mdls -name kMDItemAudioChannelCount -raw $pathx] 
              append str11 [format "    b%s  = Buffer.cueSoundFile(s,sfPath%s  ,0 ,%s);\n" $posx2 $posx2 $chanx]
-             set xdB [expr ($button_x + $x0) - 15]
-             set y0 [expr round(($rand_y * 1.2) + ($sfx_dist_y * $posy))]
+             set xdB [expr ($::button_x + $x0) - 15]
+             set y0 [expr round(($::rand_y * 1.2) + ($::sfx_dist_y * $posy))]
              set ydB [expr $y0 + 5]
-             if {$single_play == 1} { set str19b [format "synth_sf%s.free;" $posx2]} else { set str19b [format "b%s = Buffer.cueSoundFile(s,sfPath%s,0,%s);" $posx2 $posx2 $chanx] }
+             if {$::single_play == 1} { set str19b [format "synth_sf%s.free;" $posx2]} else { set str19b [format "b%s = Buffer.cueSoundFile(s,sfPath%s,0,%s);" $posx2 $posx2 $chanx] }
              if { $posx2 < $len} { set str19c [format "button_sf%s.focus(true);" [expr $posx2 + 1]] } else { set str19c [format "button_sf%s.focus(false);" $posx2]}
              append str18 [format "    //SF-%s button
     dBtext%s = StaticText(w, Rect(%s,%s,80,20)).string_(dBsf%s.asString++\" dB\").font_(Font(\"Arial\", 12)).stringColor_(Color.gray).align_(\\center);
@@ -837,7 +747,7 @@ proc write_SC_string {} {
                        %s
                        },{synth_sf%s = Synth.new(\\Play%schan,\[\\bufnum,b%s,\\mul, dBsf%s.dbamp\]);%s
                                          })});
-" $posx2 $posx2 $xdB $ydB $posx2 $posx2 $x0 $y0 $button_x $button_y $sfx_font $sfx_font_size $short_sfx $short_sfx $posx2 $str19b $posx2 $chanx $posx2 $posx2 $str19c]
+" $posx2 $posx2 $xdB $ydB $posx2 $posx2 $x0 $y0 $::button_x $::button_y $::sfx_font $::sfx_font_size $short_sfx $short_sfx $posx2 $str19b $posx2 $chanx $posx2 $posx2 $str19c]
 
              append str20 [format "    button_sf%s.focusColor  = Color.red(val: 1.0, alpha: 0.8);\n" $posx2]
              append str21 [format "b%s.free;" $posx2]
@@ -903,19 +813,13 @@ s.waitForBoot(\{
 )"  $str1 $str2 $str3 $str4 $str5 $str6 $str7 $str8 $str9 $str10 $str11 $str12 $str13 $str14 $str15 $str16 $str17 $str18 $str19 $str20 $str21]
   return $str_res }
 
-
 proc save_SC_file {} {
-  global curr_Dir
-  global out_name
-  global sf_data_List
-  global open_scd
+  set temp_scd_path [file join "$::curr_Dir/" "$::out_name.scd"]
 
-  set temp_scd_path [file join "$curr_Dir/" "$out_name.scd"]
-
-  if {$sf_data_List != ""} {
+  if {$::sf_data_List != ""} {
         set temp_str [write_SC_string]
         write_file $temp_str $temp_scd_path
-        if {$open_scd == 1} { exec open $temp_scd_path }
+        if {$::open_scd == 1} { exec open $temp_scd_path }
         .lb_saved_path configure -text "saved: $temp_scd_path"
       } else {bell}
 }
