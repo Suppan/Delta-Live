@@ -130,8 +130,6 @@ proc get_channel_list {} {
   return $bag
 }
 
-#puts [glob -directory "/Users/wsuppan/Dropbox/Musik-Edition-Suppan/Ensemble_(mit_Dir)/Drifting_Layers/Elektronik/drifting_sf/1" -type f *{.wav,.aif,.aiff}*]
-#find "/Users/wsuppan/Dropbox/Musik-Edition-Suppan/Ensemble_(mit_Dir)/Drifting_Layers/Elektronik/drifting_sf/1" -type f \( -name "*.aiff" -o -name "*.wav" \) *{.wav,.aif,.aiff}*
 proc count_sfx_in_folder_List {folder_List} {
   set counterx 0
  foreach rowx $folder_List {
