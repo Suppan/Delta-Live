@@ -5,7 +5,7 @@
 #
 #                                         Delta-Live
 #
-#                                   Wolfgang Suppan (©2021)
+#                                   Wolfgang Suppan (©2021-22)
 #
 #
 #                         auto-write soundfile player for SuperCollider
@@ -44,7 +44,8 @@ proc reset_sf_data_List {} {
   .lb_saved_path configure -text ""
 
   foreach pathx $::folder_List {
-    set sf_listx [lsort -dictionary -increasing -nocase [glob -directory $pathx -type f *{.wav,.WAV,.aif,.aiff,.AIF,.AIFF}*]]
+    #set sf_listx [lsort -dictionary -increasing -nocase [glob -directory $pathx -type f *{.wav,.aif,.aiff}*]]
+    set sf_listx [lsort -dictionary -increasing -nocase [exec find $pathx -type f \( -name "*.aiff"  -o -name "*.aif" -o -name "*.wav" \)]]
     set row_name [file tail $pathx]
     set data_bag {}
     set posx 0
@@ -66,13 +67,15 @@ proc reset_sf_data_List {} {
 proc open_new_dir {} {
   # delete existing treeview before
   set test_len1 [llength $::folder_List]
+
+
   for {set x 0} {$x < $test_len1} {incr x} { set Wert [.frame.tv delete "row$x"] }
   set upfile $::curr_Dir
   set all_new_sf {}
   set dir [tk_chooseDirectory -title "New Soundfile Directory" -initialdir $upfile]  
   if {$dir != ""} {
   # look if its one folder...
-  set filename [glob -nocomplain -directory $dir -type f *{.wav,.WAV,.aif,.aiff,.AIF,.AIFF}*]
+  set filename [glob -nocomplain -directory $dir -type f *{.wav,.aif,.aiff}*]
   if {$filename == ""} {set ::folder_List [lsort -dictionary -increasing -nocase [glob -directory $dir -type d *]]} else {
     set ::folder_List [list $dir]}
     set test_len2 [count_sfx_in_folder_List $::folder_List]
@@ -81,9 +84,10 @@ proc open_new_dir {} {
     set short_foldername [file tail $dir]
     wm title . [format "sf Dir: $dir/"]
     reset_sf_data_List } else {  set ::folder_List {}
-                                tk_messageBox -message "No soundfiles in this directory (or in one subdirectory)!" -icon warning -type ok
+                                tk_messageBox -message "No soundfiles in this directory (or in one subdirectory)! " -icon warning -type ok
                                 open_new_dir
                              }
+
   }
 }
 
@@ -126,10 +130,13 @@ proc get_channel_list {} {
   return $bag
 }
 
+#puts [glob -directory "/Users/wsuppan/Dropbox/Musik-Edition-Suppan/Ensemble_(mit_Dir)/Drifting_Layers/Elektronik/drifting_sf/1" -type f *{.wav,.aif,.aiff}*]
+#find "/Users/wsuppan/Dropbox/Musik-Edition-Suppan/Ensemble_(mit_Dir)/Drifting_Layers/Elektronik/drifting_sf/1" -type f \( -name "*.aiff" -o -name "*.wav" \) *{.wav,.aif,.aiff}*
 proc count_sfx_in_folder_List {folder_List} {
   set counterx 0
  foreach rowx $folder_List {
-    set resx [glob -nocomplain -directory $rowx -type f *{.wav,.WAV,.aif,.aiff,.AIF,.AIFF}*]
+    #set resx [glob -nocomplain -directory $rowx -type f *{.wav,.aif,.aiff}*]  ;# doubels the sf_list: *{.wav,.WAV,.aif,.aiff,.AIF,.AIFF}*
+    set resx [exec find $rowx -type f \( -name "*.aiff"  -o -name "*.aif" -o -name "*.wav" \)]
     set lenx [llength $resx] 
     if {$lenx > 0} {set counterx [expr $counterx + $lenx]} else { 
                 # break if one subdir contains no soundfiles
@@ -196,7 +203,7 @@ proc update_m_data {data} {
 proc save_m_data_dialog {} {
   if {$::sf_data_List != ""} {
   set name "$::out_name-1"
-   set file [tk_getSaveFile -title "Save Data" -parent . -defaultextension ".m_data" -initialfile $name]
+   set file [tk_getSaveFile -title "Export Data" -parent . -defaultextension ".m_data" -initialfile $name]
    if { $file == "" } {
         return; # they clicked cancel
       } else { set ::m_data [make_m_data]
@@ -230,7 +237,7 @@ after choosung one or more folders with soundfiles:
 each folder becomes a row in the SuperCollider window
 (ie. one folder -> one single row)
 
-cmd-S -> save all data ('*.m_data') to a new file
+cmd-S -> export all data ('*.m_data') to a new file
 cmd-I -> import all data ('*.m_data') 
 
 cmd-Q -> Quit
@@ -308,7 +315,7 @@ menu .mbar.file
 .mbar.file add command -label "Open soundfile Dir in Finder" -accelerator Command-O -command { open_sound_folder }
 .mbar.file add command -label "New soundfile Dir (PWD)" -accelerator Command-N -command { open_new_dir }
 .mbar.file add separator
-.mbar.file add command -label "Save" -accelerator Command-S -command { open_new_dir }
+.mbar.file add command -label "Export" -accelerator Command-S -command { open_new_dir }
 .mbar.file add command -label "Import" -accelerator Command-I -command { open_new_dir }
 
 bind . <Command-o> { open_sound_folder }
@@ -367,7 +374,7 @@ set x2_line 640
 set y_dist 37
 #------------------------
 
-ttk::label .lb_appname -text "Delta-Live v0.13"  -font "menlo 24" 
+ttk::label .lb_appname -text "Delta-Live v0.13"  -font "menlo 24" -foreground [format "#%02x%02x%02x" 255 25 127]
 place .lb_appname -x $x1_line -y 25
 
 #------------------------
@@ -384,7 +391,7 @@ place .check_single_play -x $x2_line -y [expr $y_dist * 2]
 ttk::label .lb_device -text "device:" -foreground #1c79d9
 place .lb_device -x $x1_line -y [expr $y_dist * 3]
 
-set ::device {}
+set ::device "Scarlett 4i4 USB"
 ttk::entry .enText_device  -textvariable ::device -width 15
 place .enText_device -x $x2_line -y [expr ($y_dist * 3) - 2]
 
@@ -407,6 +414,14 @@ ttk::entry .enText_out_name  -textvariable ::out_name -width 15
 place .enText_out_name -x $x2_line -y [expr ($y_dist * 5) - 2]
 
 #------------------------
+
+ttk::label .lb_audiometer -text "audiometer?:" -foreground #1c79d9
+place .lb_audiometer -x $x1_line -y [expr $y_dist * 6]
+
+set ::audiometer 1
+ttk::checkbutton .check_audiometer  -text "" -variable ::audiometer
+place .check_audiometer -x $x2_line -y [expr $y_dist * 6]
+
 
 ttk::label .lb_row_font -text "row_font:" -foreground gray
 place .lb_row_font -x $x1_line -y [expr $y_dist * 7]
@@ -443,7 +458,7 @@ place .enText_sfx_font_size -x $x2_line -y [expr ($y_dist * 10) - 2]
 ttk::label .lb_row_dist_x -text "row_dist_x:" -foreground gray
 place .lb_row_dist_x -x $x1_line -y [expr $y_dist * 11]
 
-set ::row_dist_x 200
+set ::row_dist_x 250
 ttk::entry .enText_row_dist_x  -textvariable ::row_dist_x -width 5 -validate key -validatecommand {TestEntry_onlyZahl %S}
 place .enText_row_dist_x -x $x2_line -y [expr ($y_dist * 11) - 2]
 
@@ -460,7 +475,7 @@ place .enText_sfx_dist_y -x $x2_line -y [expr ($y_dist * 12) - 2]
 ttk::label .lb_button_x -text "button_x:" -foreground gray
 place .lb_button_x -x $x1_line -y [expr $y_dist * 13]
 
-set ::button_x 140
+set ::button_x 180
 ttk::entry .enText_button_x  -textvariable ::button_x -width 5 -validate key -validatecommand {TestEntry_onlyZahl %S}
 place .enText_button_x -x $x2_line -y [expr ($y_dist * 13) - 2]
 
@@ -504,7 +519,7 @@ ttk::checkbutton .check_open_scd  -text "open in SC?" -variable ::open_scd
 place .check_open_scd -x 280 -y 657
 
 
-ttk::button .b_save_m_data -text "Save" -command { save_m_data_dialog }
+ttk::button .b_save_m_data -text "Export" -command { save_m_data_dialog }
 place .b_save_m_data -x 500 -y 650
 
 ttk::button .b_import_m_data -text "Import" -command { import_m_data_dialog }
@@ -682,6 +697,7 @@ proc write_SC_string {} {
                       set str5 [format "//s.options.device = \"Fireface 400 (F0C)\";    //ServerOptions.devices;"]}
   set str6 $::memsize_power
   set str7 [expr 2 ** $::memsize_power]
+  if {$::audiometer == 1} {set audiom "ServerMeter.new(s, 0, 4);"} else {set audiom ""}
   set str8 {}
   set str9 [format "sfPath0  = \"%s/\";" $::curr_Dir]
   set str10 {}
@@ -776,10 +792,13 @@ var sfPath0%s;
     s = Server.local;
     %s
     s.options.memSize = 2**%s;   //-> %s kilobytes (default: 2**13 -> 8192)
+    s.options.numInputBusChannels=0;
+    s.options.numOutputBusChannels=4;
     s.boot;
     s.latency = 0;
 
 s.waitForBoot(\{
+    %s
     //dB-levels:
 %s
     //Soundfile paths:
@@ -810,7 +829,7 @@ s.waitForBoot(\{
     s.quit;
                 \};
 });
-)"  $str1 $str2 $str3 $str4 $str5 $str6 $str7 $str8 $str9 $str10 $str11 $str12 $str13 $str14 $str15 $str16 $str17 $str18 $str19 $str20 $str21]
+)"  $str1 $str2 $str3 $str4 $str5 $str6 $str7 $audiom $str8 $str9 $str10 $str11 $str12 $str13 $str14 $str15 $str16 $str17 $str18 $str19 $str20 $str21]
   return $str_res }
 
 proc save_SC_file {} {
